@@ -1,9 +1,10 @@
 from django.contrib import admin
 from django.contrib.auth import forms as auth_forms
 from django.contrib.auth.admin import UserAdmin
+from django import forms
 from django.utils.translation import gettext_lazy as _
 
-from accounts.models import User
+from accounts.models import User, list_databases
 
 
 class UserChangeForm(auth_forms.UserChangeForm):
@@ -16,10 +17,12 @@ class UserChangeForm(auth_forms.UserChangeForm):
 
 
 class UserCreationForm(auth_forms.UserCreationForm):
+    database = forms.ChoiceField(choices=list_databases)
+
     # Hackish variant of builtin UserCreationForm with email instead of username
     class Meta:
         model = User
-        fields = ("email",)
+        fields = ("email", "database")
 
     def __init__(self, *args, **kwargs):
         super(UserCreationForm, self).__init__(*args, **kwargs)
@@ -30,7 +33,7 @@ class UserCreationForm(auth_forms.UserCreationForm):
 
 class CustomUserAdmin(UserAdmin):
     fieldsets = (
-        (None, {"fields": ("email", "password")}),
+        (None, {"fields": ("email", "password", "database")}),
         (_("Personal info"), {"fields": ("name",)}),
         (
             _("Permissions"),
@@ -47,7 +50,7 @@ class CustomUserAdmin(UserAdmin):
         (_("Important dates"), {"fields": ("last_login", "date_joined")}),
     )
     add_fieldsets = (
-        (None, {"classes": ("wide",), "fields": ("email", "password1", "password2")}),
+        (None, {"classes": ("wide",), "fields": ("email", "password1", "password2", "database")}),
     )
     list_display = ("id", "email", "name", "is_staff")
     search_fields = ("email", "name")

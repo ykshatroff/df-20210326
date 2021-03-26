@@ -4,9 +4,23 @@ from django.contrib.auth.models import (
     BaseUserManager,
     PermissionsMixin,
 )
-from django.db import models
+from django.db import models, connection, transaction
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
+
+
+def list_databases():
+    cursor = connection.cursor()
+    cursor.execute(""" SELECT datname from pg_database WHERE datname LIKE 'user_%'""")
+    rows = cursor.fetchall()
+    return [(row[0], row[0]) for row in rows]
+
+
+def create_database(name):
+    cursor = connection.cursor()
+    cursor.execute(f""" CREATE DATABASE {name} """)
 
 
 class UserManager(BaseUserManager):
@@ -48,6 +62,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(_("active"), default=True)
     date_joined = models.DateTimeField(_("date joined"), default=timezone.now)
 
+    database = models.CharField(max_length=255)
+
     USERNAME_FIELD = "email"
 
     objects = UserManager()
@@ -57,3 +73,12 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def get_short_name(self):
         return self.name
+
+
+@receiver(post_save, sender=User)
+def create_db_for_user(sender, instance: User, *args, **kwargs):
+    if not instance.database:
+        instance.database = f'user_{instance.id}'
+        create_database(instance.database)
+        with transaction.atomic():
+            instance.save(update_fields=['database'])
