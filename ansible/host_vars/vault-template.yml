@@ -1,0 +1,10 @@
+---
+
+django_database_password: "TODO (generate it)"
+
+django_secret_key: "TODO (generate it)"
+
+django_email_host_password: "TODO"
+
+django_aws_access_key_id: "TODO"
+django_aws_secret_access_key: "TODO"

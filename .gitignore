@@ -1,0 +1,36 @@
+.env
+.idea/
+# pyenv local python version
+.python-version
+
+*.mo
+*.pyo
+*.pyc
+.sass-cache/
+yarn-error.log
+node_modules/
+venv/
+.cache/
+
+.data*/
+
+df_20210326/settings/local.py
+df_20210326/settings/local_test.py
+df_20210326/db.sqlite3
+df_20210326/assets/
+
+df_20210326/.cache
+df_20210326/.pytest_cache
+df_20210326/.coverage
+df_20210326/coverage
+df_20210326/coverage.xml
+df_20210326/htmlcov/
+df_20210326/cover/
+# Node Project files
+app/build/
+app/coverage/
+
+# Missing translations file
+**/locales/**/*.missing.json
+
+

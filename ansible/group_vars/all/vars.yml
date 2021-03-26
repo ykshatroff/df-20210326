@@ -1,0 +1,19 @@
+# Name of the project.
+project: "df_20210326"
+
+# Repository path for git
+repository: 
+
+# Where the code should be cloned into
+code_dir: "/srv/df_20210326"
+
+# Postgres container version. This container should already exist in the server
+postgres_version: "12"
+
+# Allow/Block indexing via `X-Robots-Tag` header
+#
+# Set to true in test servers to disable indexing.
+disable_indexing: false
+
+# Ensure ansible uses python3 interpreter
+ansible_python_interpreter: /usr/bin/python3

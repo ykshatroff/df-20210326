@@ -1,0 +1,27 @@
+# Hostnames for the site
+django_site_host: "office.df-20210326.test.TODO.com"
+node_site_host: "df-20210326.test.TODO.com"
+
+# Sentry config
+django_sentry_environment: "test"
+django_sentry_dsn: ""  # TODO: Set to correct value or remove the TODO
+razzle_sentry_environment: "test"
+razzle_sentry_dsn: ""  # TODO: Set to correct value or remove the TODO
+
+# S3 bucket name to use
+django_aws_storage_bucket_name: "df_20210326-staging"
+
+# Which compose file to use in the server
+compose_file: "docker-compose.production.yml"
+
+# What git branch to deploy to the server
+#  For temporary deployments see `Deploying a different version` section in the README in ansible directory.
+deployment_version: "master"
+
+# Reminder email for letsencrypt certificates
+letsencrypt_reminder_email: "info@TODO.com"
+
+# Allow/Block indexing via `X-Robots-Tag` header
+#
+# Set to true in test servers
+disable_indexing: true

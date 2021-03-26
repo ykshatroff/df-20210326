@@ -1,0 +1,2 @@
+include conf.d/app.{{ project }}.proxy.include;
+proxy_pass http://{{ project }}_django;

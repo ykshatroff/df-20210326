@@ -1,0 +1,66 @@
+# Docker-compose configuration for development
+
+version: '2.1'
+
+services:
+  django:
+    build:
+      context: .
+      dockerfile: Dockerfile-django
+    env_file: .env
+    ports:
+      - "${DJANGO_PORT-8000}:80"
+    volumes:
+      - "./df_20210326:/app"
+      - ".data/media:/files/media"
+    environment:
+      - PYTHONUNBUFFERED=0
+    # Add -Wall option to see the (deprecation) warnings
+    # command: python -Wall manage.py runserver 0.0.0.0:80
+    command: python manage.py runserver 0.0.0.0:80
+    entrypoint: /usr/bin/wait-for-it.sh postgres:5432 -t 60 --
+    depends_on:
+      - postgres
+      - redis
+      - mailhog
+
+  node:
+    build:
+      context: .
+      dockerfile: Dockerfile-node
+    env_file: .env
+    ports:
+      - "8000:8000"
+      - "8001:8001"
+    volumes:
+      - "./app:/app"
+      - ".data/node_modules:/app/node_modules"
+
+  postgres:
+    image: postgres:12
+    # Comment in the following lines to connect to your Dockerized instance of Postgres from your host machine.
+    # Change the host port (before colon) if you have a local instance of Postgres running on that port.
+    # ports:
+    #     - "5432:5432"
+    volumes:
+      - ".data/postgres:/var/lib/postgresql/data"
+      - ".data/db-mirror:/db-mirror"  # Used by ansible mirror playbook
+    environment:
+      # credentials taken from .env file
+      POSTGRES_USER: "${DJANGO_DATABASE_USER-'df_20210326'}"
+      POSTGRES_PASSWORD: "${DJANGO_DATABASE_PASSWORD-'df_20210326'}"
+
+  redis:
+    image: redis:4.0.10-alpine
+    sysctls:
+      # To allow maintaining TCP backlog setting that defaults to 511
+      net.core.somaxconn: 512
+    volumes:
+      - ".data/redis:/data"
+
+  mailhog:
+    image: mailhog/mailhog:v1.0.0
+    ports:
+      - "${MAILHOG_PORT-8025}:8025"
+    logging:
+      driver: "none"

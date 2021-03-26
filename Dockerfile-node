@@ -1,0 +1,16 @@
+# Based on Node 12 Alpine image
+FROM node:12-alpine
+
+# Install system requirements
+RUN apk add --no-cache alpine-sdk python bash
+
+# Set the default directory where CMD will execute
+WORKDIR /app
+
+# Expose our application ports
+EXPOSE 8000
+EXPOSE 8001
+
+
+# Set the default command to execute when creating a new container
+CMD /bin/bash -c "yarn && yarn dev"
