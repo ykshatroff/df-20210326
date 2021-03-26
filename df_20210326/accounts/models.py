@@ -21,6 +21,8 @@ def list_databases():
 def create_database(name):
     cursor = connection.cursor()
     cursor.execute(f""" CREATE DATABASE {name} """)
+    cursor.execute(f""" CREATE ROLE {name} """)
+    cursor.execute(f""" GRANT ALL ON DATABASE {name} TO {name}""")
 
 
 class UserManager(BaseUserManager):
@@ -63,6 +65,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     date_joined = models.DateTimeField(_("date joined"), default=timezone.now)
 
     database = models.CharField(max_length=255)
+    number_of_secondary_roles = models.PositiveIntegerField(default=10)
 
     USERNAME_FIELD = "email"
 
