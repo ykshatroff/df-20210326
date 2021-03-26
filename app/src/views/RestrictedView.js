@@ -4,14 +4,17 @@ import { Row, Col } from 'reactstrap';
 
 import withView from 'decorators/withView';
 import { loginRequired } from 'decorators/permissions';
+import AdminUser from '../components/AdminUser';
 
 const Restricted = () => (
     <div className="page-container">
         <Helmet title="Example" />
+
         <Row>
             <Col md={12}>
                 Hi, I require logged in permissions
                 <br />
+                <AdminUser />
             </Col>
         </Row>
     </div>

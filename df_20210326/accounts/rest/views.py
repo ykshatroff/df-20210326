@@ -1,8 +1,11 @@
 from django.contrib.auth import get_user_model
+from django.db import connection, connections
 
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
+from rest_framework.views import APIView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from tg_react.api.accounts.serializers import SignupSerializer
 from tg_react.api.accounts.views import SignUpView as TgReactSignUpView
@@ -39,3 +42,14 @@ class SignUpView(TgReactSignUpView):
         return Response(
             {"errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST
         )
+
+
+class DemoAdminUserView(APIView):
+    permission_classes = (IsAuthenticated, )
+
+    def get(self, request):
+        db_user_name = f'user_{request.user.id}'
+
+        conn = connections.new (..., db=db_user_name, user=db_user_name)
+        cursor = conn.cursor()
+
