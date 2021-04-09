@@ -63,6 +63,7 @@ const api = createSagaRouter(
             signup: 'user/signup',
             forgotPassword: 'user/forgot_password',
             forgotPasswordToken: 'user/forgot_password/token',
+            demoUser: 'user/demo-admin',
         },
     },
     {

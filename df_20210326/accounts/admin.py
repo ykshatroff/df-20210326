@@ -33,7 +33,7 @@ class UserCreationForm(auth_forms.UserCreationForm):
 
 class CustomUserAdmin(UserAdmin):
     fieldsets = (
-        (None, {"fields": ("email", "password", "database")}),
+        (None, {"fields": ("email", "password", "database", "database_password")}),
         (_("Personal info"), {"fields": ("name",)}),
         (
             _("Permissions"),

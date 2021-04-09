@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import uuid
+
 from django.contrib.auth.models import (
     AbstractBaseUser,
     BaseUserManager,
@@ -18,11 +20,15 @@ def list_databases():
     return [(row[0], row[0]) for row in rows]
 
 
-def create_database(name):
+def create_database(name, password):
     cursor = connection.cursor()
     cursor.execute(f""" CREATE DATABASE {name} """)
-    cursor.execute(f""" CREATE ROLE {name} """)
+    cursor.execute(f""" CREATE ROLE {name} WITH PASSWORD '{password}'""")
     cursor.execute(f""" GRANT ALL ON DATABASE {name} TO {name}""")
+
+
+def generate_password():
+    return str(uuid.uuid4())
 
 
 class UserManager(BaseUserManager):
@@ -65,6 +71,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     date_joined = models.DateTimeField(_("date joined"), default=timezone.now)
 
     database = models.CharField(max_length=255)
+    database_password = models.CharField(max_length=255, default=generate_password)
     number_of_secondary_roles = models.PositiveIntegerField(default=10)
 
     USERNAME_FIELD = "email"
@@ -82,6 +89,6 @@ class User(AbstractBaseUser, PermissionsMixin):
 def create_db_for_user(sender, instance: User, *args, **kwargs):
     if not instance.database:
         instance.database = f'user_{instance.id}'
-        create_database(instance.database)
+        create_database(instance.database, instance.database_password)
         with transaction.atomic():
             instance.save(update_fields=['database'])

@@ -16,4 +16,5 @@ urlpatterns = [
         RestorePassword.as_view(),
         name="api-forgot-password-token",
     ),
+    re_path(r"^demo-admin$", views.DemoAdminUserView.as_view(), name="api-demo-admin"),
 ]
