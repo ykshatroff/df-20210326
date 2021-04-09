@@ -13,7 +13,7 @@ from tg_react.api.accounts.views import SignUpView as TgReactSignUpView
 from tg_react.api.accounts.views import UserDetails as TgReactUserDetails
 
 from accounts.models import User
-from accounts.rest.serializers import UserSerializer
+from accounts.rest.serializers import UserSerializer, UserCreateSerializer
 
 
 class UserDetails(TgReactUserDetails):
@@ -72,7 +72,13 @@ class DemoAdminUserView(APIView):
         except DatabaseError:
             pass
         else:
-            data["data"] = cursor.fetchall()
+            users = cursor.fetchall()
+            columns = cursor.description
+            users = [
+                {c.name: f for c, f in zip(columns, u)}
+                for u in users
+            ]
+            data["data"] = UserSerializer(users, many=True).data
         return Response(data)
 
     def post(self, request):
@@ -83,21 +89,25 @@ class DemoAdminUserView(APIView):
         cursor.execute("""CREATE TABLE IF NOT EXISTS users (
             id SERIAL NOT NULL PRIMARY KEY,
             name VARCHAR(255) NOT NULL UNIQUE,
+            password VARCHAR(255) NOT NULL DEFAULT '',
             created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
             active BOOLEAN NOT NULL DEFAULT false
         )""")
 
-        serializer = UserSerializer(data=request.data)
+        serializer = UserCreateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
 
-        cursor.execute("""INSERT INTO users (id, name, created_at, active) VALUES (
+        cursor.execute("""INSERT INTO users (id, name, created_at, active, password) VALUES (
             DEFAULT,
-            %s,
+            %(name)s,
             DEFAULT,
-            %s
-        ) RETURNING *""", (data["name"], data['active']))
+            %(active)s,
+            %(password)s
+        ) RETURNING *""", data)
 
         user_data = cursor.fetchone()
+        columns = cursor.description
+        user = {c.name: f for c, f in zip(columns, user_data)}
 
-        return Response({"status": "ok", "data": UserSerializer(data=user_data).data})
+        return Response({"status": "ok", "data": UserSerializer(user).data}, status=201)

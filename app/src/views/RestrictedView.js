@@ -12,8 +12,6 @@ const Restricted = () => (
 
         <Row>
             <Col md={12}>
-                Hi, I require logged in permissions
-                <br />
                 <AdminUser />
             </Col>
         </Row>
