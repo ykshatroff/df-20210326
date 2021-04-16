@@ -2,7 +2,7 @@
 project: "df_20210326"
 
 # Repository path for git
-repository: 
+repository: "https://github.com/ykshatroff/df-20210326.git"
 
 # Where the code should be cloned into
 code_dir: "/srv/df_20210326"

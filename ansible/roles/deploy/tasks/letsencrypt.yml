@@ -31,7 +31,7 @@
 
 
 - name: "Reload nginx"
-    shell: "docker exec nginx nginx -t && docker exec nginx nginx -s reload"
+  shell: "docker exec nginx nginx -t && docker exec nginx nginx -s reload"
   when: not fullchain_file.stat.exists
 
 
