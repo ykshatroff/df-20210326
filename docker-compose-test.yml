@@ -1,0 +1,61 @@
+# Docker-compose configuration for development
+
+version: '2.1'
+
+services:
+  django:
+    build:
+      context: .
+      dockerfile: Dockerfile-django
+    env_file: .env
+    ports:
+      - "${DJANGO_PORT-8000}:80"
+    volumes:
+      - "./df_20210326:/app"
+      - ".data/media:/files/media"
+    environment:
+      - DJANGO_DATABASE_NAME=testuser
+      - DJANGO_DATABASE_USER=testuser
+      - DJANGO_DATABASE_PASSWORD=testpassword
+
+    # Add -Wall option to see the (deprecation) warnings
+    # command: python -Wall manage.py runserver 0.0.0.0:80
+    command: python manage.py runserver 0.0.0.0:80
+    entrypoint: /usr/bin/wait-for-it.sh postgres:5432 -t 60 --
+    depends_on:
+      - postgres
+      - redis
+      - mailhog
+
+  node:
+    build:
+      context: .
+      dockerfile: Dockerfile-node
+    env_file: .env
+    ports:
+      - "8000:8000"
+      - "8001:8001"
+    volumes:
+      - "./app:/app"
+      - ".data/node_modules:/app/node_modules"
+
+  postgres:
+    image: postgres:12
+    environment:
+      POSTGRES_USER: testuser
+      POSTGRES_PASSWORD: testpassword
+
+  redis:
+    image: redis:4.0.10-alpine
+    sysctls:
+      # To allow maintaining TCP backlog setting that defaults to 511
+      net.core.somaxconn: 512
+    volumes:
+      - ".data/redis:/data"
+
+  mailhog:
+    image: mailhog/mailhog:v1.0.0
+    ports:
+      - "${MAILHOG_PORT-8025}:8025"
+    logging:
+      driver: "none"
