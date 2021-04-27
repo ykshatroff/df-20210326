@@ -43,6 +43,7 @@ django-debug-toolbar = "*"
 coverage = "==5.4.*"  # 5.5 is missing install candidate for Alpine
 ipdb = "*"
 isort = "==4.*"
+model-bakery = "*"
 # Note prospector is very picky about its dependencies,
 # avoid specifying versions for pylint/pylint-django/astroid
 # and let prospector determine which versions work together
@@ -50,6 +51,7 @@ prospector = "==1.2.*"
 pytest = "==6.*"
 pytest-django = "*"
 pytest-cov = "*"
+#pytest-env = "*"
 pylint-django = "*"
 
 

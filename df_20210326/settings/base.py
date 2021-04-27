@@ -109,10 +109,10 @@ DATABASES = {
         default="psql://{user}:{password}@{host}:{port}/{name}?sslmode={sslmode}".format(
             host=env.str("DJANGO_DATABASE_HOST", default="postgres"),
             port=env.int("DJANGO_DATABASE_PORT", default=5432),
-            name=quote(env.str("DJANGO_DATABASE_NAME", default="df_20210326")),
-            user=quote(env.str("DJANGO_DATABASE_USER", default="df_20210326")),
+            name=quote(env.str("DJANGO_DATABASE_NAME")),
+            user=quote(env.str("DJANGO_DATABASE_USER")),
             password=quote(
-                env.str("DJANGO_DATABASE_PASSWORD", default="df_20210326"),
+                env.str("DJANGO_DATABASE_PASSWORD"),
             ),
             sslmode=env.str("DJANGO_DATABASE_SSLMODE", default="disable"),
         ),

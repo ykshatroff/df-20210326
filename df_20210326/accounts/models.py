@@ -13,6 +13,13 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 
+def database_exists(name):
+    cursor = connection.cursor()
+    cursor.execute(f""" SELECT datname from pg_database WHERE datname = '{name}'""")
+    row = cursor.fetchone()
+    return bool(row)
+
+
 def list_databases():
     cursor = connection.cursor()
     cursor.execute(""" SELECT datname from pg_database WHERE datname LIKE 'user_%'""")
@@ -23,7 +30,7 @@ def list_databases():
 def create_database(name, password):
     cursor = connection.cursor()
     cursor.execute(f""" CREATE DATABASE {name} """)
-    cursor.execute(f""" CREATE ROLE {name} WITH PASSWORD '{password}'""")
+    cursor.execute(f""" CREATE ROLE {name} WITH PASSWORD '{password}' LOGIN""")
     cursor.execute(f""" GRANT ALL ON DATABASE {name} TO {name}""")
 
 
@@ -89,6 +96,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 def create_db_for_user(sender, instance: User, *args, **kwargs):
     if not instance.database:
         instance.database = f'user_{instance.id}'
+    if not database_exists(instance.database):
         create_database(instance.database, instance.database_password)
         with transaction.atomic():
             instance.save(update_fields=['database'])

@@ -17,6 +17,7 @@ services:
       - DJANGO_DATABASE_NAME=testuser
       - DJANGO_DATABASE_USER=testuser
       - DJANGO_DATABASE_PASSWORD=testpassword
+      - DJANGO_SETTINGS_MODULE=settings.local_test
 
     # Add -Wall option to see the (deprecation) warnings
     # command: python -Wall manage.py runserver 0.0.0.0:80
